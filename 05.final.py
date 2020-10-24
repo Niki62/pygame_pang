@@ -14,6 +14,9 @@ import os
 #파이게임 초기화
 pygame.init()
 
+#FPS
+clock = pygame.time.Clock()
+
 screen_width = 640
 screen_height = 480
 screen_size = (screen_width, screen_height)
@@ -34,13 +37,27 @@ character_width = character_rect[0]
 character_height = character_rect[1]
 character_x_pos = screen_width // 2 - character_width // 2
 character_y_pos = screen_height - stage_height - character_height
+character_speed = 0
 
 #게임루프
 running = True
 while running:
+    clock.tick(60)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                character_speed -= 5
+            elif event.key == pygame.K_RIGHT:
+                character_speed += 5
+        if event.type == pygame.KEYUP:
+            character_speed = 0
+    character_x_pos += character_speed
+
+    if character_x_pos < 0: character_x_pos = 0
+    if character_x_pos > screen_width - character_width:
+        character_x_pos = screen_width - character_width
 
     #화면 출력
     screen.blit(background_img, (0,0))
