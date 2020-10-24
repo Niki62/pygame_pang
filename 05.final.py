@@ -1,8 +1,6 @@
 #pypang_final
 #파이팡 게임 만들기
 
-import pygame
-import os
 #1. 파이게임 초기화
 #2. 게임환경 초기화
 #3. 캐릭터 이동
@@ -10,6 +8,9 @@ import os
 #5. 공 추가
 #6. 공 나누기
 #7. 메세지 출력
+
+import pygame
+import os
 
 #파이게임 초기화
 pygame.init()
@@ -65,6 +66,13 @@ balls = [{
 #제가할 공과 무기 인덱스 초기화
 remove_ball_idx = -1
 remove_weapon_idx = -1
+
+#폰트 설정 및 타이머 초기화
+game_font = pygame.font.Font(None, 40)
+total_time = 30
+start_time = pygame.time.get_ticks()
+
+game_result = 'Game Over'
 
 #게임루프
 running = True
@@ -158,7 +166,7 @@ while running:
                     balls.append({
                         'pos_x': one_ball['pos_x'] + one_ball_width // 2 - small_ball_width // 2,
                         'pos_y': one_ball['pos_y'] + one_ball_width // 2 - small_ball_width // 2,
-                        'to_x': - 3,
+                        'to_x': -3,
                         'to_y': -6,
                         'img_idx': one_ball['img_idx'] + 1,
                         'init_spd_y': ball_spd_y[one_ball['img_idx'] + 1]
@@ -171,6 +179,9 @@ while running:
         if remove_ball_idx > -1:
             del balls[remove_ball_idx]
             remove_ball_idx = -1
+            if len(balls) == 0:
+                game_result = "YOU wIn"
+                running = False
 
     #화면 출력
     screen.blit(background_img, (0,0))
@@ -181,8 +192,26 @@ while running:
     screen.blit(stage_img, (0, screen_height - stage_height))
     screen.blit(character_img, (character_x_pos, character_y_pos))
 
+    #타이머 출력
+    elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
+    timer = game_font.render("TIME: {}".format(int(total_time - elapsed_time)),True, (255,255,0))
+    screen.blit(timer, (10, 10))
+
+    if int(total_time - elapsed_time) < 1:
+        game_result = "TIMEOVER"
+        start_time = pygame.time.get_ticks()
+        running = False
+
     #화면 업데이트
     pygame.display.update()
+
+#메세지 출력
+msg = game_font.render(game_result, True, (255, 255, 0))
+msg_rect = msg.get_rect(center = (screen_width // 2, screen_height // 2))
+screen.blit(msg, msg_rect)
+pygame.display.update()
+
+pygame.time.delay(2000)
 
 #파이게임 종료
 pygame.quit()
