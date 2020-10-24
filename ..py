@@ -214,4 +214,5 @@ pygame.display.update()
 pygame.time.delay(2000)
 
 #파이게임 종료
+
 pygame.quit()
