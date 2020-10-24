@@ -39,6 +39,13 @@ character_x_pos = screen_width // 2 - character_width // 2
 character_y_pos = screen_height - stage_height - character_height
 character_speed = 0
 
+weapon_img = pygame.image.load(os.path.join(img_path, 'weapon.png'))
+weapon_width = weapon_img.get_rect().size[0]
+weapon_pos_x = character_x_pos + character_width // 2 - weapon_width // 2
+weapon_pos_y = character_y_pos
+weapon_speed = 10
+weapons = []
+
 #게임루프
 running = True
 while running:
@@ -51,16 +58,28 @@ while running:
                 character_speed -= 5
             elif event.key == pygame.K_RIGHT:
                 character_speed += 5
+            elif event.key == pygame.K_SPACE:
+                weapon_pos_x = character_x_pos + character_width // 2 - weapon_width // 2
+                weapon_pos_y = character_y_pos
+                weapons.append([weapon_pos_x, weapon_pos_y])
+                print(weapons)
         if event.type == pygame.KEYUP:
-            character_speed = 0
+            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                character_speed = 0
     character_x_pos += character_speed
 
     if character_x_pos < 0: character_x_pos = 0
     if character_x_pos > screen_width - character_width:
         character_x_pos = screen_width - character_width
 
+    #무기 이동
+    weapons = [[w[0],w[1] - weapon_speed] for w in weapons]
+    weapons = [[w[0], w[1]]for w in weapons if w[1] > 0]
+
     #화면 출력
     screen.blit(background_img, (0,0))
+    for one in weapons:
+        screen.blit(weapon_img, (one[0], one[1]))
     screen.blit(stage_img, (0, screen_height - stage_height))
     screen.blit(character_img, (character_x_pos, character_y_pos))
 
